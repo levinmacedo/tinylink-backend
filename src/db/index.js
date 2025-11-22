@@ -1,16 +1,21 @@
 const { Pool } = require('pg');
-const dotenv = require('dotenv');
 
-dotenv.config();
+const connectionString = process.env.DATABASE_URL || process.env.PG_CONNECTION_STRING || '';
+
+const useSSL = !!process.env.DATABASE_URL || process.env.NODE_ENV === 'production';
 
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
+  connectionString: connectionString || undefined,
+  ssl: useSSL ? { rejectUnauthorized: false } : false,
 });
 
-async function query(text, params){
-    return pool.query(text, params);
+pool.on('error', (err) => {
+  console.error('Unexpected idle client error', err);
+});
+
+async function query(text, params) {
+  const res = await pool.query(text, params);
+  return res;
 }
 
-module.exports = {
-    query,
-};
+module.exports = { query, pool };
