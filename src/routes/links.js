@@ -33,7 +33,7 @@ router.post('/', async (req,res) => {
         if(!url){
             return res.status(400).json({error: 'url is required' });
         }
-        if(!isValidHttpUrl(url)){
+        if(!isValidHttpUrl(url) || !url.includes(".")){
             return res.status(400).json({ error: 'Invalid URL format' });
         }
 
