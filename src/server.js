@@ -19,15 +19,17 @@ app.get('/healthz', (req, res) => {
 
 app.use('/', healthRouter)
 
-app.get('/test-db', async (req, res) => {
-  try {
-    const result = await query('SELECT NOW()')
-    res.json({ now: result.rows[0].now })
-  } catch (err) {
-    console.error('DB error:', err)
-    res.status(500).json({ error: 'Database error' })
-  }
-})
+if (process.env.NODE_ENV !== 'production') {
+  app.get('/test-db', async (req, res) => {
+    try {
+      const result = await query('SELECT NOW()')
+      res.json({ now: result.rows[0].now })
+    } catch (err) {
+      console.error('DB error:', err)
+      res.status(500).json({ error: 'Database error' })
+    }
+  })
+}
 
 app.use('/api/links', linksRouter)
 
@@ -47,7 +49,7 @@ app.get('/:code', async (req, res) => {
       [code]
     )
 
-    return res.redirect(originalUrl)
+    return res.status(302).redirect(originalUrl)
   } catch (err) {
     console.error('GET /:code redirect error:', err)
     return res.status(500).send('Server error')
