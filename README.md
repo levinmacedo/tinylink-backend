@@ -31,3 +31,5 @@ Notes:
 	•	Redirect increments clicks and updates last_clicked
 	•	Code must be 6–8 alphanumeric characters
 	•	/Both http and https URLs are supported
+
+tinylink-backend v1.0 finalcommit
