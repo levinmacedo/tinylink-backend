@@ -28,13 +28,11 @@ function generateRandomCode(length = 7) {
 
 router.post('/', async (req, res) => {
   try {
-    // Guard: ensure body exists and is an object (protects against missing Content-Type or invalid JSON)
     if (!req.body || typeof req.body !== 'object') {
       console.warn('POST /api/links - invalid or missing JSON body', { body: req.body });
       return res.status(400).json({ error: 'Invalid request body - expected JSON' });
     }
 
-    // safe destructure after the guard
     const { url, code: customCode } = req.body;
 
     if (!url) {
