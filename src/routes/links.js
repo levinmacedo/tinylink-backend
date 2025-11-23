@@ -85,9 +85,7 @@ router.post('/', async (req, res) => {
 
     return res.status(201).json(created);
   } catch (err) {
-    // log stack and helpful context
     console.error('POST /api/links error:', err && (err.stack || err));
-    // If Postgres unique-violation, return 409 (safety)
     if (err && err.code === '23505') {
       return res.status(409).json({ error: 'Code already in use' });
     }
