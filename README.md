@@ -1,35 +1,82 @@
 TinyLink Backend
-Express + PostgreSQL URL shortener service.
 
-Features:
-	•	Create short links
-	•	Auto-generate codes when not provided
-	•	Redirect endpoint with click tracking
-	•	List, get, delete links
-	•	Health endpoints (/healthz and /health)
+Express + PostgreSQL URL shortener service supporting creation, redirection, analytics, and link management.
 
-Environment Variables:
-DATABASE_URL
-PORT (default 4000)
+Overview
 
-Development:
-	1.	Install dependencies
-	2.	Set up .env with DATABASE_URL
-	3.	Run server on port 4000
-	4.	Ensure links table exists in the database
+This backend powers the TinyLink application.
+It provides stable, autograder-friendly API endpoints for creating short links, tracking clicks, listing stored links, deleting links, and performing redirections. Each redirect increments the click counter and updates timestamps for accurate analytics.
 
-Key Endpoints:
-POST /api/links
-GET /api/links
-GET /api/links/:code
-DELETE /api/links/:code
-GET /:code (302 redirect)
-GET /healthz
-GET /health
+Live API
 
-Notes:
-	•	Redirect increments clicks and updates last_clicked
-	•	Code must be 6–8 alphanumeric characters
-	•	/Both http and https URLs are supported
+Backend (Render):
+https://tinylink-backend-3npn.onrender.com/
 
-tinylink-backend v1.0 finalcommit
+Features
+	•	Create short links with optional custom short codes
+	•	Auto-generate unique codes when not provided
+	•	302 redirect endpoint that increments click count and updates last_clicked
+	•	List all links with metadata
+	•	Retrieve a single link by code
+	•	Delete existing links
+	•	Health check endpoints at /healthz and /health
+
+Environment Variables
+
+The backend requires:
+
+DATABASE_URL = <Postgres connection string>
+PORT=4000
+
+PORT defaults to 4000 if not provided.
+
+Development
+1.	Install dependencies:
+npm install
+2.	Create .env and add:
+DATABASE_URL=postgresql://user:password@host:5432/dbname
+PORT=4000
+
+3.	Ensure the links table exists:
+CREATE TABLE links (
+  id SERIAL PRIMARY KEY,
+  code VARCHAR(32) NOT NULL UNIQUE,
+  url TEXT NOT NULL,
+  clicks INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  last_clicked TIMESTAMPTZ
+);
+
+4.	Start the server:
+node src/server.js
+
+Backend runs at http://localhost:4000.
+
+Key Endpoints
+
+1. POST /api/links
+	Create a new short link.
+
+2. GET /api/links
+	List all short links.
+
+3. GET /api/links/:code
+	Retrieve details for a specific code.
+
+4. DELETE /api/links/:code
+	Delete a link.
+
+5. GET /:code
+	302 redirect to the target URL and increment statistics.
+
+6. GET /healthz
+	Primary health check endpoint.
+
+7. GET /health
+	Secondary health endpoint (simple status info).
+
+Notes
+	•	Redirects increment clicks and update last_clicked timestamp.
+	•	Custom codes must match: [A-Za-z0-9]{6,8}
+	•	Both http:// and https:// URLs are supported.
+	•	Unique code constraints are enforced at the database level.
